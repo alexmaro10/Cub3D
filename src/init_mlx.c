@@ -6,7 +6,7 @@
 /*   By: almaldon <almaldon@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/14 16:04:09 by almaldon          #+#    #+#             */
-/*   Updated: 2026/01/14 19:32:07 by almaldon         ###   ########.fr       */
+/*   Updated: 2026/02/10 11:32:01 by almaldon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,9 @@ int create_image(t_mlx *mlx)
 
 int	close_game(t_game *game)
 {
-	// Liberar mapa
 	if (game->map)
 		ft_free_map(game->map);
-
-	// Liberar estructura de map_data
 	ft_free_struct(&game->map_data);
-
-	// Destruir imagen y ventana
 	if (game->mlx.img)
 		mlx_destroy_image(game->mlx.mlx, game->mlx.img);
 	if (game->mlx.win)

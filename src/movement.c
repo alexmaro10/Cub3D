@@ -6,7 +6,7 @@
 /*   By: almaldon <almaldon@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/14 19:24:04 by almaldon          #+#    #+#             */
-/*   Updated: 2026/01/20 11:48:36 by almaldon         ###   ########.fr       */
+/*   Updated: 2026/02/10 11:36:56 by almaldon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,37 +22,34 @@ int move_player(int keycode, void *param)
 	int rows = 0;
 	int cols = 0;
 
-	// Contar número de filas
 	while (game->map_data.only_map[rows])
 		rows++;
-
-	// Movimiento
-	if (keycode == KEY_W) // W
+	if (keycode == KEY_W)
 	{
 		write(1, "A", 1);
 		new_x += cos(game->map_data.player_data.angle) * move;
 		new_y += sin(game->map_data.player_data.angle) * move;
 	}
-	else if (keycode == KEY_S) // S
+	else if (keycode == KEY_S)
 	{
 		new_x -= cos(game->map_data.player_data.angle) * move;
 		new_y -= sin(game->map_data.player_data.angle) * move;
 	}
-	else if (keycode == KEY_A) // A
+	else if (keycode == KEY_A)
 	{
 		new_x += cos(game->map_data.player_data.angle - M_PI/2) * move;
 		new_y += sin(game->map_data.player_data.angle - M_PI/2) * move;
 	}
-	else if (keycode == KEY_D) // D
+	else if (keycode == KEY_D)
 	{
 		new_x += cos(game->map_data.player_data.angle + M_PI/2) * move;
 		new_y += sin(game->map_data.player_data.angle + M_PI/2) * move;
 	}
-	else if (keycode == KEY_LA) // flecha izquierda
+	else if (keycode == KEY_LA)
 		game->map_data.player_data.angle -= rot;
-	else if (keycode == KEY_RA) // flecha derecha
+	else if (keycode == KEY_RA)
 		game->map_data.player_data.angle += rot;
-	else if (keycode == KEY_ESC) // ESC
+	else if (keycode == KEY_ESC)
 	{
 		mlx_destroy_window(game->mlx.mlx, game->mlx.win);
 		ft_free_map(game->map);
@@ -63,8 +60,6 @@ int move_player(int keycode, void *param)
 		edit_fov('+', &game->map_data.player_data);
 	else if (keycode == 65364)
 		edit_fov('-', &game->map_data.player_data);
-
-	// Comprobar colisión sin map_width/height
 	if ((int)new_y >= 0 && (int)new_y < rows - 1)
 	{
 		cols = 0;

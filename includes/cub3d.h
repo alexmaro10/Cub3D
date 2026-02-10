@@ -6,7 +6,7 @@
 /*   By: almaldon <almaldon@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:01:02 by almaldon          #+#    #+#             */
-/*   Updated: 2026/01/15 12:28:51 by almaldon         ###   ########.fr       */
+/*   Updated: 2026/02/10 11:31:26 by almaldon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@
 # define KEY_RA 65363
 # define KEY_ESC 65307
 # define FOV_VALUE 60.f
-#define MINIMAP_SCALE 10  // cada celda del mapa = 10x10 pixels
-#define MINIMAP_MARGIN 10 // margen desde la esquina superior izquierda
+#define MINIMAP_SCALE 10
+#define MINIMAP_MARGIN 10
 
 # define WIN_W 2048
 # define WIN_H 1536
@@ -75,8 +75,8 @@ typedef struct s_ray
 	double	hit_x;
 	double	hit_y;
 	double	distance;
-	int		hit_vertical;   // chocó con pared vertical (E/W)
-	int		hit_horizontal; // chocó con pared horizontal (N/S)
+	int		hit_vertical;
+	int		hit_horizontal;
 }	t_ray;
 
 typedef struct s_map_data
@@ -98,7 +98,7 @@ typedef struct s_map_data
 	int	f_color;
 	int	c_color;
 	
-	t_player_data player_data;	
+	t_player_data player_data;
 }	t_map_data;
 
 typedef struct s_mlx
