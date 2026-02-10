@@ -1,0 +1,12 @@
+/* XPM */
+static char *no_texture_xpm[] = {
+"7 7 2 1",
+". c #FFFFFF", // fondo blanco
+"N c #FF0000", // letra roja
+"........",
+"..NNN...",
+"..N.N...",
+"..NNN...",
+"..N.N...",
+"..NNN...",
+"........"};

@@ -1,0 +1,12 @@
+/* XPM */
+static char *south_xpm[] = {
+"7 7 2 1",
+". c #FFFFFF", // fondo blanco
+"S c #00FF00", // letra verde
+".......",
+"..SSS..",
+".S.....",
+"..SS...",
+"....S..",
+"..SSS..",
+"......."};

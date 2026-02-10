@@ -1,0 +1,13 @@
+/* XPM */
+static char *west_xpm[] = {
+"7 7 2 1",
+". c #FFFFFF", // fondo blanco
+"W c #0000FF", // letra azul
+".......",
+".W...W.",
+".W...W.",
+".W.W.W.",
+".W.W.W.",
+".WWWWW.",
+"......."
+};
