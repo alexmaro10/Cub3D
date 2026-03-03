@@ -6,136 +6,82 @@
 /*   By: almaldon <almaldon@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:09:36 by almaldon          #+#    #+#             */
-/*   Updated: 2026/02/10 11:33:35 by almaldon         ###   ########.fr       */
+/*   Updated: 2026/03/03 10:08:30 by almaldon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
 
-static void	init_map_data(t_map_data *map_data)
-{
-	map_data->no = NULL;
-	map_data->so = NULL;
-	map_data->we = NULL;
-	map_data->ea = NULL;
-	map_data->f = NULL;
-	map_data->c = NULL;
-	map_data->only_map = NULL;
-}
-
-static char	**extract_map(char **file, int map_start)
-{
-	int i;
-	int lines;
-	char **map;
-
-	lines = 0;
-	i = map_start;
-	while (file[i])
-	{
-		lines++;
-		i++;
-	}
-	map = malloc(sizeof(char *) * (lines + 1));
-	if (!map)
-		return NULL;
-	i = 0;
-	while (i < lines)
-	{
-		map[i] = ft_strdup_no_nl(file[map_start + i]);
-		i++;
-	}
-	map[i] = NULL;
-	return map;
-}
-
-static int	fill_structures(char **map, t_map_data *map_data)
-{
-	int	i;
-	int	j;
-
-	i = -1;
-	if (extract_no(map, map_data) != 0 || extract_so(map, map_data) != 0 || extract_we(map, map_data) != 0 || extract_ea(map, map_data) != 0)
-		return(1);
-	map_data->c_color = rgb_to_int(map_data->c);
-	map_data->f_color = rgb_to_int(map_data->f);
-	while (map_data->only_map[++i])
-	{
-		j = -1;
-		while (map_data->only_map[i][++j])
-		{
-			if (map_data->only_map[i][j] != '0' &&
-				map_data->only_map[i][j] != '1' &&
-				map_data->only_map[i][j] != ' ')
-			{
-				if (map_data->only_map[i][j] == 'N')
-					map_data->player_data.angle = 3 * M_PI / 2;
-				if (map_data->only_map[i][j] == 'S')
-					map_data->player_data.angle = M_PI / 2;
-				if (map_data->only_map[i][j] == 'W')
-					map_data->player_data.angle = M_PI;
-				if (map_data->only_map[i][j] == 'E')
-					map_data->player_data.angle = 0;
-				map_data->player_data.x = (float)j + 0.5;
-				map_data->player_data.y = (float)i + 0.5;
-			}
-		}
-	}
-	map_data->player_data.move_speed = .1f;
-	map_data->player_data.rot_speed = .07f;
-	map_data->player_data.fov = 60.f;;
-	show_struct(map_data);
-	return (0);
-}
-
-void free_game(t_game *game)
+void	free_game(t_game *game)
 {
 	ft_free_map(game->map);
 	ft_free_struct(&game->map_data);
-	mlx_destroy_image(game->mlx.mlx, game->no.img);
-	mlx_destroy_image(game->mlx.mlx, game->so.img);
-	mlx_destroy_image(game->mlx.mlx, game->we.img);
-	mlx_destroy_image(game->mlx.mlx, game->ea.img);
-	mlx_destroy_image(game->mlx.mlx, game->mlx.img);
-	mlx_destroy_window(game->mlx.mlx, game->mlx.win);
+}
+
+int	check_texture_files_open(t_map_data *map_data)
+{
+	int	fd[4];
+
+	fd[0] = open(map_data->no, O_RDONLY);
+	fd[1] = open(map_data->so, O_RDONLY);
+	fd[2] = open(map_data->we, O_RDONLY);
+	fd[3] = open(map_data->ea, O_RDONLY);
+	if (fd[0] < 0 || fd[1] < 0 || fd[2] < 0 || fd[3] < 0)
+	{
+		printf(RED "ERROR\nFailed to load textures.\n" RESET);
+		return (1);
+	}
+	close(fd[0]);
+	close(fd[1]);
+	close(fd[2]);
+	close(fd[3]);
+	return (0);
+}
+
+int	init_all_data(t_game *game, char *filename, int argc)
+{
+	init_map_data(&game->map_data);
+	if (check_args(filename, argc) != 0)
+		return (1);
+	game->map = file_to_charpp(filename);
+	if (!game->map)
+		return (1);
+	if (valid_map(game->map, &game->map_data) != 0)
+	{
+		ft_free_map(game->map);
+		ft_free_struct(&game->map_data);
+		return (EXIT_FAILURE);
+	}
+	game->map_data.only_map = extract_map(game->map,
+			game->map_data.map_init_line);
+	if (fill_structures(game->map, &game->map_data) != 0
+		|| check_texture_files_open(&game->map_data) == 1)
+	{
+		ft_free_map(game->map);
+		ft_free_struct(&game->map_data);
+		return (EXIT_FAILURE);
+	}
+	init_player_keys(game);
+	return (0);
 }
 
 int	main(int argc, char **argv)
 {
 	t_game	game;
-	
-	init_map_data(&game.map_data);
-	if (check_args(argv[1], argc) != 0)
-		return (EXIT_FAILURE);
-	game.map = file_to_charpp(argv[1]);
-	if (!game.map)
+
+	if (init_all_data(&game, argv[1], argc) == 1)
 		return (1);
-	if (valid_map(game.map, &game.map_data) != 0)
-	{
-		ft_free_map(game.map);
-		ft_free_struct(&game.map_data);
+	if (init_mlx(&game) != 0)
 		return (EXIT_FAILURE);
-	}
-	game.map_data.only_map = extract_map(game.map, game.map_data.map_init_line);
-	if (fill_structures(game.map, &game.map_data) != 0)
-	{
-		ft_free_map(game.map);
-		ft_free_struct(&game.map_data);
-		ft_printf("Calloc has failed\n");
+	if (load_texture(game.mlx.mlx, &game.north, game.map_data.no)
+		|| load_texture(game.mlx.mlx, &game.south, game.map_data.so)
+		|| load_texture(game.mlx.mlx, &game.west, game.map_data.we)
+		|| load_texture(game.mlx.mlx, &game.east, game.map_data.ea))
 		return (EXIT_FAILURE);
-	}
-	if (init_mlx(&game.mlx))
-		return (EXIT_FAILURE);
-	if (create_image(&game.mlx))
-		return (EXIT_FAILURE);
-	if (load_textures(&game))
-	{
-		ft_printf("Failed to load textures\n");
-		return (EXIT_FAILURE);
-	}
-	render_scene(&game);
-	mlx_hook(game.mlx.win, 2, 1L<<0, move_player, &game);
+	mlx_hook(game.mlx.win, 2, 1L << 0, key_press, &game);
+	mlx_hook(game.mlx.win, 3, 1L << 1, key_release, &game);
 	mlx_hook(game.mlx.win, 17, 0, close_game, &game);
+	mlx_loop_hook(game.mlx.mlx, game_loop, &game);
 	mlx_loop(game.mlx.mlx);
 	free_game(&game);
 	return (0);

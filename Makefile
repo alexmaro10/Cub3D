@@ -10,9 +10,27 @@ LIBFT_DIR   := libft
 LIBFT       := $(LIBFT_DIR)/libft.a
 MLX_DIR     := minilibx
 MLX_LIB     := $(MLX_DIR)/libmlx.a
-SRCS        :=	src/main.c src/arg_validation.c src/map_validation.c src/map_validation_2.c \
-				src/utils.c src/utils_2.c src/utils_3.c src/init_mlx.c src/movement.c src/render.c src/textures.c
-OBJS        := $(SRCS:src/%.c=$(OBJ_DIR)/%.o)
+
+# Todas las fuentes
+SRCS	:=	src/main.c \
+			src/parser/arg_validation.c \
+			src/parser/map_validation.c \
+			src/parser/map_validation_2.c \
+			src/parser/map_validation_3.c \
+			src/utils/utils.c \
+			src/utils/utils_2.c \
+			src/utils/utils_3.c \
+			src/utils/utils_mlx.c \
+			src/init/init.c \
+			src/init/init_ray.c \
+			src/raycast/raycast.c \
+			src/loop/loop.c \
+			src/movement/movement.c \
+			src/movement/rotation.c \
+			src/raycast/textures.c \
+
+# Generar nombres de objetos en obj/ manteniendo subcarpetas
+OBJS        := $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRCS))
 
 # Flags para Linux
 MLX_FLAGS   := -L$(MLX_DIR) -lmlx -lXext -lX11 -lm -lz
@@ -33,20 +51,21 @@ RESET := \033[0m
 all: $(LIBFT) $(MLX_LIB) $(NAME)
 
 # -------------------------------
-# COMPILACIÓN DEL EJECUTABLE
+# EJECUTABLE
 # -------------------------------
 
 $(NAME): $(OBJS)
 	@printf "$(WHITE)Compilando $(NAME)...$(RESET)\t\t"
-	@$(CC) $(OBJS) $(LDFLAGS) -o $(NAME)
+	@$(CC) $(OBJS) $(LDFLAGS) -o $@
 	@printf "$(GREEN)[✔]$(RESET)\n\n"
 
 # -------------------------------
-# COMPILACIÓN DE OBJETOS
+# OBJETOS
 # -------------------------------
 
-$(OBJ_DIR)/%.o: src/%.c
-	@mkdir -p $(OBJ_DIR)
+# Compila cualquier .c en obj/ respetando subcarpetas
+$(OBJ_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # -------------------------------
